@@ -1,40 +1,38 @@
-name: Auto Deploy Update Set to Demo 2
+name: Deploy Update Set to Demo 2
 
 on:
   push:
+    branches:
+      - main
     paths:
-      - 'updates/*.xml'  
+      - 'updates/**.xml'
 
 jobs:
-  deploy-update-set:
-    name: Deploy to ServiceNow Demo 2
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Identify pushed update set file
+      - name: Find latest update set file
         id: find_file
         run: |
-          FILE=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'updatesets/' | head -n 1)
-          echo "file_path=$FILE" >> $GITHUB_ENV
+          FILE=$(find updatesets -type f -name "*.xml" | sort | tail -n 1)
+          echo "file_path=$FILE" >> $GITHUB_OUTPUT
 
       - name: Display selected file
-        run: echo "File to deploy:$file_path"
-        env:
-          file_path: ${{ env.file_path }}
-
+        run: echo "File to deploy:${{ steps.find_file.outputs.file_path }}"
 
       - name: Deploy update set to Demo 2
         env:
-          SN_INSTANCE: agreeyasolutionsincdemo2.service-now.com 
+          SN_INSTANCE: agreeyasolutionsincdemo2.service-now.com
           SN_USER: ${{ secrets.SN_DEMO2_USER }}
           SN_PASS: ${{ secrets.SN_DEMO2_PASS }}
         run: |
           FILE="${{ steps.find_file.outputs.file_path }}"
           if [ -z "$FILE" ]; then
-            echo "No update set file found in commit."
+            echo "No update set file found."
             exit 1
           fi
 
