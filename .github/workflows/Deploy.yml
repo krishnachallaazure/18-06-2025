@@ -1,14 +1,11 @@
 name: Auto Deploy to Demo2
-
 on:
   push:
     paths:
       - 'updates/*.xml'
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
