@@ -24,7 +24,9 @@ jobs:
           echo "file_path=$FILE" >> $GITHUB_ENV
 
       - name: Display selected file
-        run: echo "File to deploy: $file_path"
+        run: |
+          echo "File to deploy: $file_path"
+
 
       - name: Deploy update set to Demo 2
         env:
