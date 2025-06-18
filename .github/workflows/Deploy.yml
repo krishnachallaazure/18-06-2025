@@ -1,0 +1,38 @@
+name: Auto Deploy to Demo2
+
+on:
+  push:
+    paths:
+      - 'updates/*.xml'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload Update Set to Demo2
+        env:
+          SN_INSTANCE: "agreeyasolutionsincdemo2.service-now.com"
+          SN_USER: ${{ secrets.SN_DEMO2_USER }}
+          SN_PASS: ${{ secrets.SN_DEMO2_PASS }}
+        run: |
+          file_path=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep 'updatesets/.*\.xml' | head -1)
+
+          if [ -z "$file_path" ]; then
+            echo "No update set XML found. Skipping."
+            exit 0
+          fi
+
+          echo "Uploading $file_path to $SN_INSTANCE"
+
+          update_xml=$(cat "$file_path")
+          encoded=$(echo "$update_xml" | base64)
+
+          curl -u "$SN_USER:$SN_PASS" \
+            -X POST "https://$SN_INSTANCE/api/now/table/sys_update_set" \
+            -H "Accept: application/json" \
+            -H "Content-Type: application/xml" \
+            --data-binary @"$file_path"
