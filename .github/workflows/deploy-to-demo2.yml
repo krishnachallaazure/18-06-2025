@@ -1,5 +1,4 @@
 name: Deploy Update Set to Demo 2
-
 on:
   push:
     branches:
@@ -18,7 +17,7 @@ jobs:
       - name: Find latest update set file
         id: find_file
         run: |
-          FILE=$(find updatesets -type f -name "*.xml" | sort | tail -n 1)
+          FILE=$(find updates -type f -name "*.xml" | sort | tail -n 1)
           echo "file_path=$FILE" >> $GITHUB_OUTPUT
 
       - name: Display selected file
