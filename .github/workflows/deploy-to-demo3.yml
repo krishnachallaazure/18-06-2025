@@ -26,6 +26,8 @@ jobs:
       - name: Display selected file
         run: |
           echo "File to deploy: $file_path"
+          echo "---- File Content ----"
+          cat "$file_path"
 
       - name: Deploy update set to Demo 3
         env:
