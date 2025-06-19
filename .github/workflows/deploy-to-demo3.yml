@@ -42,7 +42,7 @@ jobs:
 
           curl -s -w "\nHTTP STATUS: %{http_code}\n" -o response.txt \
             -u "$SN_USER:$SN_PASS" \
-            -X POST "https://$SN_INSTANCE/api/global/update_set_importer/import?file_name=$(basename $file_path)" \
+            -X POST "https://$SN_INSTANCE/api/ays/updatesetimporterapi/import?file_name=$(basename $file_path)" \
             -H "Accept: application/json" \
             -H "Content-Type: application/xml" \
             --data-binary @"$file_path"
