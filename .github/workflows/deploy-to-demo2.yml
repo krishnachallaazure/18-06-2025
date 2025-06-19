@@ -27,12 +27,11 @@ jobs:
         run: |
           echo "File to deploy: $file_path"
 
-
       - name: Deploy update set to Demo 3
         env:
           SN_INSTANCE: agreeyasolutionsincdemo3.service-now.com
-          SN_USER: ${{ secrets.SN_DEMO2_USER }}
-          SN_PASS: ${{ secrets.SN_DEMO2_PASS }}
+          SN_USER: ${{ secrets.SN_DEMO3_USER }}
+          SN_PASS: ${{ secrets.SN_DEMO3_PASS }}
           file_path: ${{ env.file_path }}
         run: |
           if [ -z "$file_path" ]; then
@@ -44,9 +43,8 @@ jobs:
 
           curl -s -w "\nHTTP STATUS: %{http_code}\n" -o response.txt \
             -u "$SN_USER:$SN_PASS" \
-            -X POST "https://$SN_INSTANCE/api/ays/updatesetimporterapi/import" \
+            -X POST "https://$SN_INSTANCE/api/global/update_set_importer/import?file_name=$(basename $file_path)" \
             -H "Accept: application/json" \
-            -H "Content-Type: application/xml" \
-            --data-binary @"$file_path"
+            -F "update_set_file=@$file_path;type=application/xml"
 
           cat response.txt
